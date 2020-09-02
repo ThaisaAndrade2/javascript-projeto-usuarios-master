@@ -195,24 +195,9 @@ class UserController {
         );
     }
 
-
-    getUsersStorage(){
-        
-        let users = [];
-
-        if (localStorage.getItem("users")){
-
-            users = JSON.parse(localStorage.getItem("users"));
-
-        }
-
-        return users;
-
-    }
-
     selectAll(){
 
-        let users = this.getUsersStorage();
+        let users = User.getUsersStorage();;
 
         users.forEach(dataUser =>{
 
@@ -244,10 +229,10 @@ class UserController {
 
         tr.innerHTML = `
         <td><img src="${dataUser.photo}" alt ="User Image" class="img-circle img-sm"></td>
-        <th>${dataUser.name}</th>
-        <th>${dataUser.email}</th>
-        <th>${(dataUser.admin ? "Sim" : "Não" )}</th>
-        <th>${Utils.dateFormat(dataUser.register)}</th>
+        <td>${dataUser.name}</td>
+        <td>${dataUser.email}</td>
+        <td>${(dataUser.admin ? "Sim" : "Não" )}</td>
+        <td>${Utils.dateFormat(dataUser.register)}</td>
         <td>
             <buttton type = "button" class = "btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
             <buttton type = "button" class = "btn btn-danger btn-xs btn-delete btn-flat">Excluir</button>
@@ -264,9 +249,15 @@ class UserController {
 
     addEventsTr(tr){
 
-        tr.querySelector(".btn-delete").addEventListener("click", (e) =>{
+        tr.querySelector(".btn-delete").addEventListener("click", e =>{
 
             if(confirm("Deseja realmente excluir?")){
+
+                let user = new User;
+
+                user.loadFromJSON(JSON.parse(tr.dataset.user));
+
+                user.remove();
 
                 tr.remove();
                 this.updateCount();
@@ -274,7 +265,7 @@ class UserController {
 
         });
 
-        tr.querySelector(".btn-edit").addEventListener("click", (e) =>{
+        tr.querySelector(".btn-edit").addEventListener("click", e =>{
 
             let json = JSON.parse(tr.dataset.user);
             
